@@ -40,6 +40,15 @@ class _AppListsState extends State<AppLists> {
             ),
           ),
         ),
+        actions: <Widget>[
+          // AppBar にボタンを用意して表示内容を切り替える処理が書かれている
+          PopupMenuButton(
+              icon: Icon(Icons.format_list_bulleted),
+              itemBuilder: (BuildContext context) {
+                print('button');
+              },
+          )
+        ],
       ),
       body: FutureBuilder(
         // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
