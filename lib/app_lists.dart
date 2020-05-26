@@ -20,12 +20,91 @@ class _AppListsState extends State<AppLists> {
   int currentPage = 0;
 
   GlobalKey bottomNavigationKey = GlobalKey();
-  int _counter = 0;
+  String _viewType = 'grid';
 
-  void _incrementCounter() {
+  void _toggleViewType() {
     setState(() {
-      _counter++;
+      if (_viewType == 'lists') {
+        _viewType = 'grid';
+      } else {
+        _viewType = 'lists';
+      }
     });
+  }
+
+  Widget _toggleView(apps) {
+    if (_viewType == 'grid') {
+      return GridView.builder(
+        itemCount: apps.length,
+        primary: false,
+        padding: const EdgeInsets.all(40),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 50,
+          mainAxisSpacing: 40,
+          crossAxisCount: 3,
+        ),
+        itemBuilder: (context, index) {
+          final app = apps[index];
+          return Container(
+            child: app is ApplicationWithIcon
+            // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+                ? GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    this.context,
+                    MaterialPageRoute(
+                        builder: (context) => AppInfo())
+                );
+              },
+              child: CircleAvatar(
+                backgroundImage: MemoryImage(app.icon as Uint8List),
+                backgroundColor: Colors.white,
+              ),
+            )
+            // ない場合はアイコンなし
+                : null,
+          );
+        },
+      );
+    } else {
+      return ListView.builder(
+        itemBuilder: (context, position) {
+          final app = apps[position];
+
+          // アプリひとつずつ横並び（ Column ）で情報を表示する
+          return Column(
+            children: <Widget>[
+              ListTile(
+                // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
+                leading: app is ApplicationWithIcon
+                // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+                    ? CircleAvatar(
+                  backgroundImage: MemoryImage(app.icon),
+                  backgroundColor: Colors.white,
+                )
+                // ない場合はアイコンなし
+                    : null,
+
+                // リストをタップした場合は、そのアプリを起動する
+                onTap: () => DeviceApps.openApp(app.packageName),
+
+                // リストタイトルにアプリ名＋パッケージ名を表示
+                title: Text("${app.appName} (${app.packageName})"),
+
+                // リストサブタイトルにバージョンを表示
+                subtitle: Text('Version: ${app.versionName}'),
+              ),
+
+              // アンダーライン
+              Divider(
+                height: 1.0,
+              )
+            ],
+          );
+        },
+        itemCount: apps.length,
+      );
+    }
   }
 
   @override
@@ -42,11 +121,9 @@ class _AppListsState extends State<AppLists> {
         ),
         actions: <Widget>[
           // AppBar にボタンを用意して表示内容を切り替える処理が書かれている
-          PopupMenuButton(
-              icon: Icon(Icons.format_list_bulleted),
-              itemBuilder: (BuildContext context) {
-                print('button');
-              },
+          IconButton(
+            icon: Icon(_viewType == 'grid' ? Icons.view_list : Icons.apps),
+            onPressed: () => _toggleViewType(),
           )
         ],
       ),
@@ -68,38 +145,7 @@ class _AppListsState extends State<AppLists> {
             // データ取得後はリストビューに情報をセット
             final apps = data.data as List<Application>;
 
-            return GridView.builder(
-              itemCount: apps.length,
-              primary: false,
-              padding: const EdgeInsets.all(40),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisSpacing: 50,
-                mainAxisSpacing: 40,
-                crossAxisCount: 3,
-              ),
-              itemBuilder: (context, index) {
-                final app = apps[index];
-                return Container(
-                  child: app is ApplicationWithIcon
-                  // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
-                      ? GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              this.context,
-                              MaterialPageRoute(
-                                  builder: (context) => AppInfo())
-                          );
-                        },
-                        child: CircleAvatar(
-                    backgroundImage: MemoryImage(app.icon as Uint8List),
-                    backgroundColor: Colors.white,
-                  ),
-                      )
-                  // ない場合はアイコンなし
-                      : null,
-                );
-              },
-            );
+            return _toggleView(apps);
           }
         },
       ),
