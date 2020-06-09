@@ -39,29 +39,39 @@ class _AppListsState extends State<AppLists> {
         primary: false,
         padding: const EdgeInsets.all(40),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisSpacing: 50,
-          mainAxisSpacing: 40,
+          crossAxisSpacing: 30,
+          mainAxisSpacing: 30,
           crossAxisCount: 3,
         ),
         itemBuilder: (context, index) {
           final app = apps[index];
+          final appIcon = app is ApplicationWithIcon
+              // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+              ? app.icon
+              // ない場合はアイコンなし
+              : null;
           return Container(
-            child: app is ApplicationWithIcon
-            // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+            child: appIcon != null
+                // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
                 ? GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    this.context,
-                    MaterialPageRoute(
-                        builder: (context) => AppInfo())
-                );
-              },
-              child: CircleAvatar(
-                backgroundImage: MemoryImage(app.icon as Uint8List),
-                backgroundColor: Colors.white,
-              ),
-            )
-            // ない場合はアイコンなし
+                    // タップした場合は、詳細画面に遷移する
+                    onTap: () {
+                      Navigator.push(
+                        this.context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AppInfo(appInfo: app, appIcon: appIcon),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Image.memory(appIcon),
+                      ),
+                    ),
+                  )
+                // ない場合はアイコンなし
                 : null,
           );
         },
@@ -70,26 +80,37 @@ class _AppListsState extends State<AppLists> {
       return ListView.builder(
         itemBuilder: (context, position) {
           final app = apps[position];
+          final appIcon = app is ApplicationWithIcon
+              // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+              ? app.icon as Uint8List
+              // ない場合はアイコンなし
+              : null;
 
           // アプリひとつずつ横並び（ Column ）で情報を表示する
           return Column(
             children: <Widget>[
               ListTile(
                 // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
-                leading: app is ApplicationWithIcon
-                // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+                leading: appIcon != null
+                    // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
                     ? CircleAvatar(
-                  backgroundImage: MemoryImage(app.icon),
-                  backgroundColor: Colors.white,
-                )
-                // ない場合はアイコンなし
+                        backgroundImage: MemoryImage(appIcon),
+                        backgroundColor: Colors.white,
+                      )
+                    // ない場合はアイコンなし
                     : null,
 
-                // リストをタップした場合は、そのアプリを起動する
-                onTap: () => DeviceApps.openApp(app.packageName),
+                // タップした場合は、詳細画面に遷移する
+                onTap: () {
+                  Navigator.push(
+                      this.context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AppInfo(appInfo: app, appIcon: appIcon)));
+                },
 
                 // リストタイトルにアプリ名＋パッケージ名を表示
-                title: Text("${app.appName} (${app.packageName})"),
+                title: Text("${app.appName}"),
 
                 // リストサブタイトルにバージョンを表示
                 subtitle: Text('Version: ${app.versionName}'),

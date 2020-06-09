@@ -27,6 +27,7 @@ dependencies:
   google_fonts: ^0.2.0
   fancy_bottom_navigation: ^0.3.2
   device_apps: ^1.0.9
+  shared_preferences: ^0.5.7+3
 
 dev_dependencies:
   flutter_test:

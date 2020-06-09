@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.lime,
       ),
-      home: AppLists(title: 'Flutter Demo Home Page'),
+      home: AppLists(title: 'App manager'),
     );
   }
 }
