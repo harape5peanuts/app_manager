@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:app_manager/app_memo.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,11 +21,7 @@ class _AppInfoState extends State<AppInfo> {
 
   void _toggleViewType() {
     setState(() {
-      if (_editMode) {
-        _editMode = false;
-      } else {
-        _editMode = true;
-      }
+      _editMode = !_editMode;
     });
   }
 
@@ -64,22 +61,7 @@ class _AppInfoState extends State<AppInfo> {
                     textStyle: _style,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 50.0),
-                  child: _editMode
-                      ? TextField(
-                          decoration: InputDecoration(hintText: 'ﾒﾓﾒﾓ _φ(･_･'),
-                        )
-                      : Text(
-                          widget.appInfo.appName,
-                          style: GoogleFonts.kanit(
-                            textStyle: TextStyle(
-                              color: Color.fromRGBO(0, 0, 0, 0.6)
-                            ),
-                            fontSize: 20.0,
-                          ),
-                        ),
-                ),
+                AppMemo(appInfo: widget.appInfo, editMode: _editMode),
                 Center(
                   child: Card(
                     child: Padding(
