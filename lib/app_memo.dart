@@ -17,10 +17,15 @@ class _AppMemoState extends State<AppMemo> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   Future<String> _appMemo;
   TextEditingController _controller;
+  String _memo = null;
 
   Future<void> _saveMemo(newValue) async {
     final SharedPreferences prefs = await _prefs;
     prefs.setString(widget.appInfo.packageName, newValue);
+
+    setState(() {
+      _memo = newValue;
+    });
   }
 
   @override
@@ -35,36 +40,55 @@ class _AppMemoState extends State<AppMemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 50.0),
-      child: FutureBuilder(
-        // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
-        future: _appMemo,
-        builder: (context, data) {
-          // 非同期処理中の判断
-          if (data.data == null) {
-            // データ取得前はローディング中のプログレスを表示
-            return Center(
-              child: const CircularProgressIndicator(),
-            );
-          } else {
-            final memo = data.data as String;
-            return widget.editMode
-                ? TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(hintText: 'ﾒﾓﾒﾓ _φ(･_･'),
-                    onChanged: _saveMemo,
-                  )
-                : Text(
-                    memo == '' ? 'no app memo': memo,
-                    style: GoogleFonts.kanit(
-                      textStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.6)),
-                      fontSize: 20.0,
-                    ),
-                  );
-          }
-        },
-      ),
-    );
+    if (_memo == null) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 50.0),
+        child: FutureBuilder(
+          // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
+          future: _appMemo,
+          builder: (context, data) {
+            // 非同期処理中の判断
+            if (data.data == null) {
+              // データ取得前はローディング中のプログレスを表示
+              return Center(
+                child: const CircularProgressIndicator(),
+              );
+            } else {
+              final memo = data.data as String;
+              return widget.editMode
+                  ? TextField(
+                controller: _controller,
+                decoration: InputDecoration(hintText: 'ﾒﾓﾒﾓ _φ(･_･'),
+                onChanged: _saveMemo,
+              )
+                  : Text(
+                memo == '' ? 'このアプリのメモは登録されてないみたいだよ (¯―¯٥)' : memo,
+                style: GoogleFonts.kanit(
+                  textStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.6)),
+                  fontSize: 20.0,
+                ),
+              );
+            }
+          },
+        ),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 50.0),
+        child: widget.editMode
+            ? TextField(
+          controller: _controller,
+          decoration: InputDecoration(hintText: 'ﾒﾓﾒﾓ _φ(･_･'),
+          onChanged: _saveMemo,
+        )
+            : Text(
+          _memo,
+          style: GoogleFonts.kanit(
+            textStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.6)),
+            fontSize: 20.0,
+          ),
+        ),
+      );
+    }
   }
 }
