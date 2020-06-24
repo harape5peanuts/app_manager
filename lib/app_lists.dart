@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'app_info.dart';
 
 class AppLists extends StatefulWidget {
-  AppLists({Key key, this.viewType}) : super(key: key);
+  AppLists({Key key, this.viewType, this.getAppsFunction}) : super(key: key);
 
   final String viewType;
+  final Future<List<Application>> getAppsFunction;
 
   @override
   _AppListsState createState() => _AppListsState();
@@ -116,11 +117,7 @@ class _AppListsState extends State<AppLists> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
-      future: DeviceApps.getInstalledApplications(
-        includeAppIcons: true,
-        includeSystemApps: true,
-        onlyAppsWithLaunchIntent: true,
-      ),
+      future: widget.getAppsFunction,
       builder: (context, data) {
         // 非同期処理中の判断
         if (data.data == null) {

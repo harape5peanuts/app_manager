@@ -1,6 +1,7 @@
 import 'package:app_manager/app_lists.dart';
 import 'package:app_manager/search.dart';
 import 'package:app_manager/settings.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,10 +16,11 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-  int currentPage = 1;
+  int currentPage = 0;
 
   GlobalKey bottomNavigationKey = GlobalKey();
   String _viewType = 'grid';
+  Future<List<Application>> _getAppsFunction;
 
   void _toggleViewType() {
     setState(() {
@@ -33,12 +35,22 @@ class _MainState extends State<Main> {
   Widget _getPage(pageNum) {
     switch (pageNum) {
       case 0:
-        return AppLists(viewType: _viewType);
+        return AppLists(viewType: _viewType, getAppsFunction: _getAppsFunction);
       case 1:
-        return Search();
+        return Search(getAppsFunction: _getAppsFunction);
       case 2:
         return Settings();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getAppsFunction = DeviceApps.getInstalledApplications(
+      includeAppIcons: true,
+      includeSystemApps: true,
+      onlyAppsWithLaunchIntent: true,
+    );
   }
 
   @override
@@ -68,9 +80,9 @@ class _MainState extends State<Main> {
         tabs: [
           TabData(iconData: Icons.home, title: "Home"),
           TabData(iconData: Icons.search, title: "Search"),
-          TabData(iconData: Icons.settings, title: "Settings")
+          TabData(iconData: Icons.star, title: "favorite")
         ],
-        initialSelection: 1,
+        initialSelection: 0,
         key: bottomNavigationKey,
         onTabChangedListener: (position) {
           setState(() {
