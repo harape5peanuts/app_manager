@@ -4,7 +4,7 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'app_info.dart';
+import 'information.dart';
 
 class Search extends StatefulWidget {
   Search({Key key, this.getAppsFunction}) : super(key: key);
@@ -16,10 +16,13 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-
   Future<List<Application>> search(String search) async {
     final apps = await widget.getAppsFunction;
-    return apps;
+    var searchApps = apps
+        .where(
+            (app) => app.appName?.toLowerCase()?.contains(search?.toLowerCase()))
+        .toList();
+    return searchApps;
   }
 
   @override
@@ -31,20 +34,20 @@ class _SearchState extends State<Search> {
         minimumChars: 1,
         onItemFound: (Application app, int index) {
           final appIcon = app is ApplicationWithIcon
-          // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+              // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
               ? app.icon as Uint8List
-          // ない場合はアイコンなし
+              // ない場合はアイコンなし
               : null;
 
           return ListTile(
             // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
             leading: appIcon != null
-            // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+                // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
                 ? CircleAvatar(
-              backgroundImage: MemoryImage(appIcon),
-              backgroundColor: Colors.white,
-            )
-            // ない場合はアイコンなし
+                    backgroundImage: MemoryImage(appIcon),
+                    backgroundColor: Colors.white,
+                  )
+                // ない場合はアイコンなし
                 : null,
 
             // タップした場合は、詳細画面に遷移する
@@ -53,7 +56,7 @@ class _SearchState extends State<Search> {
                   this.context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          AppInfo(appInfo: app, appIcon: appIcon)));
+                          Information(appInfo: app, appIcon: appIcon)));
             },
 
             // リストタイトルにアプリ名＋パッケージ名を表示
@@ -66,5 +69,4 @@ class _SearchState extends State<Search> {
       ),
     );
   }
-
 }

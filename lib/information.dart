@@ -5,18 +5,18 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AppInfo extends StatefulWidget {
+class Information extends StatefulWidget {
   final Application appInfo;
   final Uint8List appIcon;
 
-  const AppInfo({Key key, @required this.appInfo, this.appIcon})
+  const Information({Key key, @required this.appInfo, this.appIcon})
       : super(key: key);
 
   @override
-  _AppInfoState createState() => _AppInfoState();
+  _InformationState createState() => _InformationState();
 }
 
-class _AppInfoState extends State<AppInfo> {
+class _InformationState extends State<Information> {
   bool _editMode = false;
 
   void _toggleViewType() {

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 
-import 'app_info.dart';
+import 'information.dart';
 
 class AppLists extends StatefulWidget {
   AppLists({Key key, this.viewType, this.getAppsFunction}) : super(key: key);
@@ -45,7 +45,7 @@ class _AppListsState extends State<AppLists> {
                         this.context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              AppInfo(appInfo: app, appIcon: appIcon),
+                              Information(appInfo: app, appIcon: appIcon),
                         ),
                       );
                     },
@@ -91,7 +91,7 @@ class _AppListsState extends State<AppLists> {
                       this.context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              AppInfo(appInfo: app, appIcon: appIcon)));
+                              Information(appInfo: app, appIcon: appIcon)));
                 },
 
                 // リストタイトルにアプリ名＋パッケージ名を表示
