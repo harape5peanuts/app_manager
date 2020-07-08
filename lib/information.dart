@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:app_manager/app_memo.dart';
+import 'package:app_manager/google_map.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -77,6 +78,19 @@ class _InformationState extends State<Information> {
               ],
             )),
       ),
+      floatingActionButton: _editMode
+          ? FloatingActionButton(
+              child: Icon(Icons.place),
+              onPressed: () {
+                Navigator.push(
+                  this.context,
+                  MaterialPageRoute(
+                    builder: (context) => GoogleMap(),
+                  ),
+                );
+              },
+            )
+          : null,
     );
   }
 }

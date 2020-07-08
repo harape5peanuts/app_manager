@@ -20,7 +20,8 @@ class _SearchState extends State<Search> {
     final apps = await widget.getAppsFunction;
     var searchApps = apps
         .where(
-            (app) => app.appName?.toLowerCase()?.contains(search?.toLowerCase()))
+            (app) =>
+            app.appName?.toLowerCase()?.contains(search?.toLowerCase()))
         .toList();
     return searchApps;
   }

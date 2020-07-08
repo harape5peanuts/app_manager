@@ -1,6 +1,6 @@
 import 'package:app_manager/app_lists.dart';
 import 'package:app_manager/search.dart';
-import 'package:app_manager/settings.dart';
+import 'package:app_manager/favorite.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class _MainState extends State<Main> {
       case 1:
         return Search(getAppsFunction: _getAppsFunction);
       case 2:
-        return Settings();
+        return Favorite();
     }
   }
 

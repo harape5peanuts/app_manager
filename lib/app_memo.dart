@@ -1,3 +1,4 @@
+import 'package:app_manager/model/app_info.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,6 +41,10 @@ class _AppMemoState extends State<AppMemo> {
 
   @override
   Widget build(BuildContext context) {
+//    AppInfo a = AppInfo();
+//    a.setMemo(_memo);
+
+
     if (_memo == null) {
       return Padding(
         padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 50.0),
