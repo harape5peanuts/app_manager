@@ -41,9 +41,6 @@ class _AppMemoState extends State<AppMemo> {
 
   @override
   Widget build(BuildContext context) {
-//    AppInfo a = AppInfo();
-//    a.setMemo(_memo);
-
 
     if (_memo == null) {
       return Padding(
