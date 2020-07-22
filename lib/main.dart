@@ -59,10 +59,11 @@ class _MainState extends State<Main> {
       appBar: AppBar(
           title: Text(
             widget.title,
-            style: GoogleFonts.kanit(
+            style: GoogleFonts.mPLUS1p(
               textStyle: TextStyle(
                 decoration: TextDecoration.none,
               ),
+              fontWeight: FontWeight.bold,
             ),
           ),
           actions: currentPage == 0

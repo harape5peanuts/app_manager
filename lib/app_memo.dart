@@ -65,9 +65,10 @@ class _AppMemoState extends State<AppMemo> {
               )
                   : Text(
                 memo == '' ? 'このアプリのメモは登録されてないみたいだよ (¯―¯٥)' : memo,
-                style: GoogleFonts.kanit(
+                style: GoogleFonts.mPLUS1p(
                   textStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.6)),
                   fontSize: 20.0,
+                  fontWeight: FontWeight.normal,
                 ),
               );
             }
@@ -85,7 +86,7 @@ class _AppMemoState extends State<AppMemo> {
         )
             : Text(
           _memo,
-          style: GoogleFonts.kanit(
+          style: GoogleFonts.mPLUS1p(
             textStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.6)),
             fontSize: 20.0,
           ),
