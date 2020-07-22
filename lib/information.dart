@@ -70,9 +70,10 @@ class _InformationState extends State<Information> {
       appBar: AppBar(
         title: Text(
           'App Info',
-          style: GoogleFonts.kanit(
+          style: GoogleFonts.mPLUS1p(
             textStyle: TextStyle(
               decoration: TextDecoration.none,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -91,8 +92,9 @@ class _InformationState extends State<Information> {
             children: <Widget>[
               Text(
                 widget.appInfo.appName,
-                style: GoogleFonts.kanit(
+                style: GoogleFonts.mPLUS1p(
                   textStyle: _style,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               AppMemo(appInfo: widget.appInfo, editMode: _editMode),
@@ -109,10 +111,14 @@ class _InformationState extends State<Information> {
                   ),
                 ),
               ),
-              Text(
-                '位置情報',
-                style: GoogleFonts.kanit(
-                  textStyle: Theme.of(context).textTheme.headline6,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 30.0, 0, 2.0),
+                child: Text(
+                  '位置情報',
+                  style: GoogleFonts.mPLUS1p(
+                    textStyle: Theme.of(context).textTheme.headline5,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
               ),
               FutureBuilder(
@@ -132,8 +138,9 @@ class _InformationState extends State<Information> {
                       return Center(
                         child: Text(
                           '緯度 : $latitude / 経度 : $longitude',
-                          style: GoogleFonts.kanit(
-                            textStyle: Theme.of(context).textTheme.bodyText1,
+                          style: GoogleFonts.mPLUS1p(
+                            textStyle: Theme.of(context).textTheme.bodyText2,
+                            fontWeight: FontWeight.normal,
                           ),
                         ),
                       );

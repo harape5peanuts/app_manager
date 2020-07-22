@@ -19,7 +19,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.lime,
       ),
-      home: Main(title: 'App manager'),
+      home: Main(title: 'APP MANAGER'),
     );
   }
 }

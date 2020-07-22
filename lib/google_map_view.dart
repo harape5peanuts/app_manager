@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:location/location.dart' as l;
 
 class GoogleMapView extends StatefulWidget {
   GoogleMapView({Key key, this.position}) : super(key: key);
@@ -16,16 +17,19 @@ class GoogleMapView extends StatefulWidget {
 
 class _GoogleMapState extends State<GoogleMapView> {
   Completer<GoogleMapController> _controller = Completer();
-  Location _locationService = Location();
+  l.Location _locationService = l.Location();
 
   // 現在位置
-  LocationData _yourLocation;
+  l.LocationData _yourLocation;
 
   // 現在位置の監視状況
   StreamSubscription _locationChangedListen;
 
   // アプリの位置情報
   LatLng _position;
+
+  final places =
+      GoogleMapsPlaces(apiKey: "xxxxxxxxxxxxxxxxxx");
 
   @override
   void initState() {
@@ -35,12 +39,12 @@ class _GoogleMapState extends State<GoogleMapView> {
     _getLocation();
 
     // 現在位置の変化を監視
-    _locationChangedListen =
-        _locationService.onLocationChanged.listen((LocationData result) async {
-          setState(() {
-            _yourLocation = result;
-          });
-        });
+    _locationChangedListen = _locationService.onLocationChanged
+        .listen((l.LocationData result) async {
+      setState(() {
+        _yourLocation = result;
+      });
+    });
   }
 
   @override
@@ -49,6 +53,19 @@ class _GoogleMapState extends State<GoogleMapView> {
 
     // 監視を終了
     _locationChangedListen?.cancel();
+  }
+
+  Future<List<PlacesSearchResult>> search() async {
+    PlacesSearchResponse response = await places.searchNearbyWithRadius(
+        Location(_position.latitude, _position.longitude), 10);
+    // TODO: 確認用の出力
+    response.results.forEach((element) {
+      print('名前: ' + element.name);
+      print('緯度: ' + (element.geometry.location.lat).toString());
+      print('経度: ' + (element.geometry.location.lng).toString());
+      print('types: ' + element.types.join(","));
+    });
+    return response.results;
   }
 
   @override
@@ -62,9 +79,10 @@ class _GoogleMapState extends State<GoogleMapView> {
       appBar: AppBar(
         title: Text(
           'Google Map',
-          style: GoogleFonts.kanit(
+          style: GoogleFonts.mPLUS1p(
             textStyle: TextStyle(
               decoration: TextDecoration.none,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -95,7 +113,6 @@ class _GoogleMapState extends State<GoogleMapView> {
 
       // Google Map ウィジェットを返す
       return GoogleMap(
-
         // 初期表示される位置情報を現在位置から設定
         initialCameraPosition: CameraPosition(
           target: LatLng(_yourLocation.latitude, _yourLocation.longitude),
@@ -117,6 +134,41 @@ class _GoogleMapState extends State<GoogleMapView> {
             // タップイベントは位置情報を引数に持つので、それをアプリの位置情報に登録（画面再描画）
             _position = value;
 //            search();
+            // 店舗情報を検索し、その結果をダイアログに表示・選択してもらう
+            // →選択した位置情報を保存
+            search().then((stores) {
+              List<SimpleDialogOption> selectors = [
+                // 選択肢の先頭に「店舗を選択しない」を用意
+                SimpleDialogOption(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("店舗を選択しない"),
+                ),
+              ];
+              stores.forEach((element) {
+                // 取得した店舗情報をループし
+                selectors.add(
+                  SimpleDialogOption(
+                    // 選択肢のプレスイベントに位置情報をセットする処理を設定
+                    onPressed: () {
+                      _position = LatLng(element.geometry.location.lat,
+                          element.geometry.location.lng);
+                      Navigator.pop(context);
+                    },
+                    // 店舗名を選択肢の名称に設定
+                    child: Text(element.name),
+                  ),
+                );
+              });
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    title: Text("店舗選択"),
+                    children: selectors,
+                  );
+                },
+              );
+            });
           });
         },
       );
