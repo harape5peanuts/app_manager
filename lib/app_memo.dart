@@ -1,11 +1,10 @@
-import 'package:app_manager/model/app_info.dart';
-import 'package:device_apps/device_apps.dart';
+import 'package:app_manager/model/app_info_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppMemo extends StatefulWidget {
-  final Application appInfo;
+  final AppInfoModel appInfo;
   final bool editMode;
 
   const AppMemo({Key key, this.appInfo, this.editMode}) : super(key: key);

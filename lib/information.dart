@@ -1,19 +1,15 @@
-import 'dart:typed_data';
-
 import 'package:app_manager/app_memo.dart';
 import 'package:app_manager/google_map_view.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_manager/model/app_info_model.dart';
 
 class Information extends StatefulWidget {
-  final Application appInfo;
-  final Uint8List appIcon;
+  final AppInfoModel appInfo;
 
-  const Information({Key key, @required this.appInfo, this.appIcon})
-      : super(key: key);
+  const Information({Key key, @required this.appInfo}) : super(key: key);
 
   @override
   _InformationState createState() => _InformationState();
@@ -38,25 +34,21 @@ class _InformationState extends State<Information> {
         widget.appInfo.packageName + '-position-latitude', newValue.latitude);
     prefs.setDouble(
         widget.appInfo.packageName + '-position-longitude', newValue.longitude);
-
-    setState(() {
-      _position = newValue;
-    });
   }
 
   @override
   void initState() {
     super.initState();
-    _appPosition = _prefs.then((SharedPreferences prefs) {
-      var latitude =
-          (prefs.getDouble(widget.appInfo.packageName + '-position-latitude') ??
-              0);
-      var longitude = (prefs
-              .getDouble(widget.appInfo.packageName + '-position-longitude') ??
-          0);
-      var position = LatLng(latitude, longitude);
-      return position;
-    });
+//    _appPosition = _prefs.then((SharedPreferences prefs) {
+//      var latitude =
+//          (prefs.getDouble(widget.appInfo.packageName + '-position-latitude') ??
+//              0);
+//      var longitude = (prefs
+//              .getDouble(widget.appInfo.packageName + '-position-longitude') ??
+//          0);
+//      var position = LatLng(latitude, longitude);
+//      return position;
+//    });
   }
 
   @override
@@ -65,6 +57,12 @@ class _InformationState extends State<Information> {
         .textTheme
         .display1
         .apply(color: Color.fromRGBO(0, 0, 0, 0.9));
+
+    if (_position == null) {
+      _position = widget.appInfo.position;
+    }
+    final latitude = _position?.latitude;
+    final longitude = _position?.longitude;
 
     return Scaffold(
       appBar: AppBar(
@@ -91,7 +89,7 @@ class _InformationState extends State<Information> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                widget.appInfo.appName,
+                widget.appInfo.name,
                 style: GoogleFonts.mPLUS1p(
                   textStyle: _style,
                   fontWeight: FontWeight.bold,
@@ -106,7 +104,7 @@ class _InformationState extends State<Information> {
                       margin: const EdgeInsets.all(10.0),
                       width: 50,
                       height: 50,
-                      child: Image.memory(widget.appIcon),
+                      child: Image.memory(widget.appInfo.icon),
                     ),
                   ),
                 ),
@@ -121,40 +119,23 @@ class _InformationState extends State<Information> {
                   ),
                 ),
               ),
-              FutureBuilder(
-                future: _appPosition,
-                builder: (context, data) {
-                  if (data == null) {
-                    // データ取得前はローディング中のプログレスを表示
-                    return Center(
-                      child: const CircularProgressIndicator(),
-                    );
-                  } else {
-                    _position = data.data;
-                    if (_position != null) {
-                      final latitude = _position?.latitude;
-                      final longitude = _position?.longitude;
-
-                      return Center(
-                        child: Text(
-                          '緯度 : $latitude / 経度 : $longitude',
-                          style: GoogleFonts.mPLUS1p(
-                            textStyle: Theme.of(context).textTheme.bodyText2,
-                            fontWeight: FontWeight.normal,
-                          ),
+              _position != null
+                  ? Center(
+                      child: Text(
+                        '緯度 : $latitude / 経度 : $longitude',
+                        style: GoogleFonts.mPLUS1p(
+                          textStyle: Theme.of(context).textTheme.bodyText2,
                         ),
-                      );
-                    } else {
-                      return Center(
-                        child: Text(
-                          '未設定',
-                          style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        '未設定',
+                        style: GoogleFonts.mPLUS1p(
+                          textStyle: Theme.of(context).textTheme.bodyText2,
                         ),
-                      );
-                    }
-                  }
-                },
-              ),
+                      ),
+                    ),
             ],
           ),
         ),
@@ -171,6 +152,10 @@ class _InformationState extends State<Information> {
                     ),
                   ),
                 ).then((value) {
+                  setState(() {
+                    _position = value;
+                    widget.appInfo.setPosition(value);
+                  });
                   _savePosition(value);
                 });
               },

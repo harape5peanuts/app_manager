@@ -1,22 +1,21 @@
 import 'dart:typed_data';
 
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 
 import 'information.dart';
+import 'model/app_info_model.dart';
 
 class AppLists extends StatefulWidget {
   AppLists({Key key, this.viewType, this.getAppsFunction}) : super(key: key);
 
   final String viewType;
-  final Future<List<Application>> getAppsFunction;
+  final Future<List<AppInfoModel>> getAppsFunction;
 
   @override
   _AppListsState createState() => _AppListsState();
 }
 
 class _AppListsState extends State<AppLists> {
-
   Widget _toggleView(apps) {
     if (widget.viewType == 'grid') {
       return GridView.builder(
@@ -30,14 +29,10 @@ class _AppListsState extends State<AppLists> {
         ),
         itemBuilder: (context, index) {
           final app = apps[index];
-          final appIcon = app is ApplicationWithIcon
-              // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
-              ? app.icon
-              // ない場合はアイコンなし
-              : null;
+          final appIcon = app.icon;
           return Container(
             child: appIcon != null
-                // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+                // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
                 ? GestureDetector(
                     // タップした場合は、詳細画面に遷移する
                     onTap: () {
@@ -45,7 +40,7 @@ class _AppListsState extends State<AppLists> {
                         this.context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              Information(appInfo: app, appIcon: appIcon),
+                              Information(appInfo: app),
                         ),
                       );
                     },
@@ -65,11 +60,7 @@ class _AppListsState extends State<AppLists> {
       return ListView.builder(
         itemBuilder: (context, position) {
           final app = apps[position];
-          final appIcon = app is ApplicationWithIcon
-              // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
-              ? app.icon as Uint8List
-              // ない場合はアイコンなし
-              : null;
+          final appIcon = app.icon;
 
           // アプリひとつずつ横並び（ Column ）で情報を表示する
           return Column(
@@ -77,7 +68,7 @@ class _AppListsState extends State<AppLists> {
               ListTile(
                 // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
                 leading: appIcon != null
-                    // アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表示する
+                    // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
                     ? CircleAvatar(
                         backgroundImage: MemoryImage(appIcon),
                         backgroundColor: Colors.white,
@@ -91,7 +82,7 @@ class _AppListsState extends State<AppLists> {
                       this.context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              Information(appInfo: app, appIcon: appIcon)));
+                              Information(appInfo: app)));
                 },
 
                 // リストタイトルにアプリ名＋パッケージ名を表示
@@ -127,7 +118,7 @@ class _AppListsState extends State<AppLists> {
           );
         } else {
           // データ取得後はリストビューに情報をセット
-          final apps = data.data as List<Application>;
+          final apps = data.data as List<AppInfoModel>;
 
           return _toggleView(apps);
         }

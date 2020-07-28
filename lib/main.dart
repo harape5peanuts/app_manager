@@ -5,6 +5,9 @@ import 'package:device_apps/device_apps.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:app_manager/model/app_info_model.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Main extends StatefulWidget {
   Main({Key key, this.title}) : super(key: key);
@@ -20,7 +23,40 @@ class _MainState extends State<Main> {
 
   GlobalKey bottomNavigationKey = GlobalKey();
   String _viewType = 'grid';
-  Future<List<Application>> _getAppsFunction;
+//  Future<List<Application>> _getAppsFunction;
+  Future<List<Application>> _getApplicationFunction;
+  Future<List<AppInfoModel>> _getAppsFunction;
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  Future<List<AppInfoModel>> _getApps() async {
+    List<Application> apps = await _getApplicationFunction;
+    List<AppInfoModel> models = [];
+    for (var app in apps) {
+      final appIcon = app is ApplicationWithIcon
+// アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表⽰する
+          ? app.icon
+// ない場合はアイコンなし
+          : null;
+      final position = await _getPosition(app);
+      models.add(AppInfoModel(
+          name: app.appName,
+          packageName: app.packageName,
+          icon: appIcon,
+          position: position));
+    }
+    return models;
+  }
+
+  Future<LatLng> _getPosition(appInfo) async {
+    return _prefs.then((SharedPreferences prefs) {
+      var latitude =
+          (prefs.getDouble(appInfo.packageName + '-position-latitude') ?? 0);
+      var longitude =
+          (prefs.getDouble(appInfo.packageName + '-position-longitude') ?? 0);
+      var position = LatLng(latitude, longitude);
+      return position;
+    });
+  }
 
   void _toggleViewType() {
     setState(() {
@@ -46,7 +82,8 @@ class _MainState extends State<Main> {
   @override
   void initState() {
     super.initState();
-    _getAppsFunction = DeviceApps.getInstalledApplications(
+    // フィールド名の変更
+    _getApplicationFunction = DeviceApps.getInstalledApplications(
       includeAppIcons: true,
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
@@ -55,6 +92,9 @@ class _MainState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
+    // 位置情報の取得はビルドのたびに⾏う（変更を検知できるように）
+    _getAppsFunction = _getApps();
+
     return Scaffold(
       appBar: AppBar(
           title: Text(

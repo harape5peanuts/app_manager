@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:location/location.dart' as l;
+import 'package:app_manager/LocationUtils.dart';
+
 
 class GoogleMapView extends StatefulWidget {
   GoogleMapView({Key key, this.position}) : super(key: key);
@@ -65,7 +67,10 @@ class _GoogleMapState extends State<GoogleMapView> {
       print('経度: ' + (element.geometry.location.lng).toString());
       print('types: ' + element.types.join(","));
     });
-    return response.results;
+    return response.results
+        // 地名などをフィルタリング
+        .where((element) => !element.types.contains('political'))
+        .toList();
   }
 
   @override
@@ -133,7 +138,6 @@ class _GoogleMapState extends State<GoogleMapView> {
           setState(() {
             // タップイベントは位置情報を引数に持つので、それをアプリの位置情報に登録（画面再描画）
             _position = value;
-//            search();
             // 店舗情報を検索し、その結果をダイアログに表示・選択してもらう
             // →選択した位置情報を保存
             search().then((stores) {
@@ -180,10 +184,6 @@ class _GoogleMapState extends State<GoogleMapView> {
 //        Location(_position.latitude, _position.longitude), 10);
 //    print(response);
 //  }
-
-  void _getLocation() async {
-    _yourLocation = await _locationService.getLocation();
-  }
 
   /// マーカーの位置情報を引数に、呼び出し元画面へ遷移する
   void _selectPosition() {
