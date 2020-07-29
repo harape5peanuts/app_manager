@@ -7,10 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app_manager/model/app_info_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart' as l;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
 class Main extends StatefulWidget {
-  Main({Key key, this.title}) : super(key: key);
+
+
+  const Main({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -19,10 +23,18 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  AppInfoModel appInfo;
   int currentPage = 0;
+  l.Location _locationService = l.Location();
+
+  // 現在位置
+  l.LocationData _yourLocation;
+
+  LatLng _position;
 
   GlobalKey bottomNavigationKey = GlobalKey();
   String _viewType = 'grid';
+
 //  Future<List<Application>> _getAppsFunction;
   Future<List<Application>> _getApplicationFunction;
   Future<List<AppInfoModel>> _getAppsFunction;
@@ -71,6 +83,11 @@ class _MainState extends State<Main> {
   Widget _getPage(pageNum) {
     switch (pageNum) {
       case 0:
+//        List<AppInfoModel> apps;
+//        _getAppsFunction.then((value) => apps = value);
+//        LatLng nowPosition = LatLng(_yourLocation.latitude, _yourLocation.longitude);
+//        apps.where((app) =>
+//        haversineDistance(app.position, nowPosition) < 0.5);
         return AppLists(viewType: _viewType, getAppsFunction: _getAppsFunction);
       case 1:
         return Search(getAppsFunction: _getAppsFunction);
@@ -82,6 +99,12 @@ class _MainState extends State<Main> {
   @override
   void initState() {
     super.initState();
+
+    // 現在位置の取得
+    _getLocation();
+
+//    _position = appInfo.position;
+
     // フィールド名の変更
     _getApplicationFunction = DeviceApps.getInstalledApplications(
       includeAppIcons: true,
@@ -89,6 +112,34 @@ class _MainState extends State<Main> {
       onlyAppsWithLaunchIntent: true,
     );
   }
+
+  void _getLocation() async {
+    _yourLocation = await _locationService.getLocation();
+  }
+
+  double haversineDistance(LatLng mk1, LatLng mk2) {
+    // Radius of the Earth in Kilometers
+    var R = 6371.0710;
+    // 角度（ radians ）に変換
+    var latitudeRadians1 = mk1.latitude * (pi / 180);
+    var latitudeRadians2 = mk2.latitude * (pi / 180);
+    // 緯度の角度差を求める
+    var diffLatitude = latitudeRadians2 - latitudeRadians1;
+    // 軽度の角度差を求める
+    var diffLongitude = (mk2.longitude - mk1.longitude) * (pi /
+        180);
+    // 2点間の距離を計算する
+    var d = 2 *
+        R *
+        asin(sqrt(
+            sin(diffLatitude / 2) * sin(diffLatitude / 2) +
+                cos(latitudeRadians1) *
+                    cos(latitudeRadians2) *
+                    sin(diffLongitude / 2) *
+                    sin(diffLongitude / 2)));
+    return d;
+  }
+
 
   @override
   Widget build(BuildContext context) {

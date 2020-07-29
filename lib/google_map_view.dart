@@ -5,8 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:location/location.dart' as l;
-import 'package:app_manager/LocationUtils.dart';
-
 
 class GoogleMapView extends StatefulWidget {
   GoogleMapView({Key key, this.position}) : super(key: key);
@@ -100,6 +98,10 @@ class _GoogleMapState extends State<GoogleMapView> {
         child: Icon(Icons.check),
       ),
     );
+  }
+
+  void _getLocation() async {
+    _yourLocation = await _locationService.getLocation();
   }
 
   Widget _makeGoogleMap() {
