@@ -4,6 +4,7 @@ import 'package:app_manager/favorite.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_overboard/flutter_overboard.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app_manager/model/app_info_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,8 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 class Main extends StatefulWidget {
-
-
   const Main({Key key, this.title}) : super(key: key);
 
   final String title;
@@ -23,6 +22,10 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  // チュートリアル表示後かどうかの State を用意
+  bool _afterOverBoad = false;
+  GlobalKey mainKey = GlobalKey();
+
   AppInfoModel appInfo;
   int currentPage = 0;
   l.Location _locationService = l.Location();
@@ -83,17 +86,22 @@ class _MainState extends State<Main> {
   Widget _getPage(pageNum) {
     switch (pageNum) {
       case 0:
-//        List<AppInfoModel> apps;
-//        _getAppsFunction.then((value) => apps = value);
-//        LatLng nowPosition = LatLng(_yourLocation.latitude, _yourLocation.longitude);
-//        apps.where((app) =>
-//        haversineDistance(app.position, nowPosition) < 0.5);
-        return AppLists(viewType: _viewType, getAppsFunction: _getAppsFunction);
+        return AppLists(
+            viewType: _viewType, getAppsFunction: _getNearLocationApps());
       case 1:
         return Search(getAppsFunction: _getAppsFunction);
       case 2:
         return Favorite();
     }
+  }
+
+  Future<List<AppInfoModel>> _getNearLocationApps() async {
+    List<AppInfoModel> apps = await _getAppsFunction;
+    LatLng nowPosition =
+        LatLng(_yourLocation.latitude, _yourLocation.longitude);
+    return apps
+        .where((app) => haversineDistance(app.position, nowPosition) < 0.5)
+        .toList();
   }
 
   @override
@@ -126,62 +134,109 @@ class _MainState extends State<Main> {
     // 緯度の角度差を求める
     var diffLatitude = latitudeRadians2 - latitudeRadians1;
     // 軽度の角度差を求める
-    var diffLongitude = (mk2.longitude - mk1.longitude) * (pi /
-        180);
+    var diffLongitude = (mk2.longitude - mk1.longitude) * (pi / 180);
     // 2点間の距離を計算する
     var d = 2 *
         R *
-        asin(sqrt(
-            sin(diffLatitude / 2) * sin(diffLatitude / 2) +
-                cos(latitudeRadians1) *
-                    cos(latitudeRadians2) *
-                    sin(diffLongitude / 2) *
-                    sin(diffLongitude / 2)));
+        asin(sqrt(sin(diffLatitude / 2) * sin(diffLatitude / 2) +
+            cos(latitudeRadians1) *
+                cos(latitudeRadians2) *
+                sin(diffLongitude / 2) *
+                sin(diffLongitude / 2)));
     return d;
   }
-
 
   @override
   Widget build(BuildContext context) {
     // 位置情報の取得はビルドのたびに⾏う（変更を検知できるように）
     _getAppsFunction = _getApps();
 
-    return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            widget.title,
-            style: GoogleFonts.mPLUS1p(
-              textStyle: TextStyle(
-                decoration: TextDecoration.none,
-              ),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: currentPage == 0
-              ? <Widget>[
-                  // AppBar にボタンを用意して表示内容を切り替える処理が書かれている
-                  IconButton(
-                    icon: Icon(
-                        _viewType == 'grid' ? Icons.view_list : Icons.apps),
-                    onPressed: () => _toggleViewType(),
-                  )
-                ]
-              : <Widget>[]),
-      body: _getPage(currentPage),
-      bottomNavigationBar: FancyBottomNavigation(
-        tabs: [
-          TabData(iconData: Icons.home, title: "Home"),
-          TabData(iconData: Icons.search, title: "Search"),
-          TabData(iconData: Icons.star, title: "favorite")
-        ],
-        initialSelection: 0,
-        key: bottomNavigationKey,
-        onTabChangedListener: (position) {
+    // チュートリアル用の Scaffold ウィジェット
+    final overBoard = Scaffold(
+      key: mainKey,
+      body: OverBoard(
+        pages: pages,
+        showBullets: true,
+        skipCallback: () {
           setState(() {
-            currentPage = position;
+            _afterOverBoad = true;
+          });
+        },
+        finishCallback: () {
+          setState(() {
+            _afterOverBoad = true;
           });
         },
       ),
     );
+
+    return _afterOverBoad
+        ? Scaffold(
+            appBar: AppBar(
+                title: Text(
+                  widget.title,
+                  style: GoogleFonts.mPLUS1p(
+                    textStyle: TextStyle(
+                      decoration: TextDecoration.none,
+                    ),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                actions: currentPage == 0
+                    ? <Widget>[
+                        // AppBar にボタンを用意して表示内容を切り替える処理が書かれている
+                        IconButton(
+                          icon: Icon(_viewType == 'grid'
+                              ? Icons.view_list
+                              : Icons.apps),
+                          onPressed: () => _toggleViewType(),
+                        )
+                      ]
+                    : <Widget>[]),
+            body: _getPage(currentPage),
+            bottomNavigationBar: FancyBottomNavigation(
+              tabs: [
+                TabData(iconData: Icons.home, title: "Home"),
+                TabData(iconData: Icons.search, title: "Search"),
+                TabData(iconData: Icons.star, title: "favorite")
+              ],
+              initialSelection: 0,
+              key: bottomNavigationKey,
+              onTabChangedListener: (position) {
+                setState(() {
+                  currentPage = position;
+                });
+              },
+            ),
+          )
+        : overBoard;
   }
+
+  final pages = [
+    PageModel(
+        color: const Color(0xFFF9C270),
+        imageAssetPath: 'assets/tutorial/tutorial1.png',
+        title: 'アプリにメモ！',
+        body: 'アプリに関する言葉や店名をメモしよう。',
+        doAnimateImage: true),
+    PageModel(
+        color: const Color(0xFFA5D4AD),
+        imageAssetPath: 'assets/tutorial/tutorial2.png',
+        title: '位置情報を登録！',
+        body: 'アプリを使う場所の位置情報を登録しよう。',
+        doAnimateImage: true),
+    PageModel(
+        color: const Color(0xFFE7D5E8),
+        imageAssetPath: 'assets/tutorial/tutorial3.png',
+        title: 'アプリにすばやくアクセス！',
+        body: '現在位置から使えるアプリが home に表示されるよ。',
+        doAnimateImage: true),
+    PageModel.withChild(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 25.0),
+          child: Image.asset('assets/03.png', width: 300.0, height: 300.0),
+        ),
+        color: const Color(0xFFFBDAC8),
+        doAnimateChild: true)
+  ];
 }
