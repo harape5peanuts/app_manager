@@ -228,13 +228,13 @@ class _MainState extends State<Main> {
     PageModel(
         color: const Color(0xFFE7D5E8),
         imageAssetPath: 'assets/tutorial/tutorial3.png',
-        title: 'アプリにすばやくアクセス！',
-        body: '現在位置から使えるアプリが home に表示されるよ。',
+        title: 'アプリを起動！',
+        body: '現在位置から近くで使えるアプリが home に表示されるよ。',
         doAnimateImage: true),
     PageModel.withChild(
         child: Padding(
           padding: EdgeInsets.only(bottom: 25.0),
-          child: Image.asset('assets/03.png', width: 300.0, height: 300.0),
+          child: Image.asset('assets/tutorial/tutorial4.png', width: 400.0, height: 400.0),
         ),
         color: const Color(0xFFFBDAC8),
         doAnimateChild: true)
