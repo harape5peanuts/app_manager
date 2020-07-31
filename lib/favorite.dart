@@ -22,13 +22,17 @@ class _FavoriteState extends State<Favorite> {
         child: Column(
           children: <Widget>[
             Text(
-              'お気に入りしているアプリがありません',
+              'お気に入りアプリがないよ(¯－¯٥)',
               style: GoogleFonts.mPLUS1p(
                 fontWeight: FontWeight.bold,
+                fontSize: 15.0,
               ),
             ),
-            SizedBox(height: 40),
-            Text('アプリ情報の★をタップしてお気に入りのアプリを登録しよう！'),
+            SizedBox(height: 20),
+            Text(
+              'アプリ情報の★をタップしてお気に入りのアプリを登録しよう！',
+              style: GoogleFonts.mPLUS1p(),
+            ),
           ],
         ),
       ),
@@ -106,7 +110,7 @@ class _FavoriteState extends State<Favorite> {
                 title: Text("${app.name}"),
 
                 // リストサブタイトルにバージョンを表示
-//                subtitle: Text('Version: ${app.versionName}'),
+                subtitle: Text('${app.memo}'),
               ),
 
               // アンダーライン

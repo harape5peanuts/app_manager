@@ -53,10 +53,12 @@ class _MainState extends State<Main> {
 // ない場合はアイコンなし
           : null;
       final position = await _getPosition(app);
+      final memo = await _getMemo(app);
       final fav = await _getFav(app);
       models.add(
         AppInfoModel(
             name: app.appName,
+            memo: memo,
             packageName: app.packageName,
             icon: appIcon,
             position: position,
@@ -74,6 +76,13 @@ class _MainState extends State<Main> {
           (prefs.getDouble(appInfo.packageName + '-position-longitude') ?? 0);
       var position = LatLng(latitude, longitude);
       return position;
+    });
+  }
+
+  Future<String> _getMemo(appInfo) async {
+    return _prefs.then((SharedPreferences prefs) {
+      var memo = (prefs.getString(appInfo.packageName) ?? '');
+      return memo;
     });
   }
 

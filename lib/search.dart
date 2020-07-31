@@ -1,5 +1,6 @@
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'information.dart';
 import 'model/app_info_model.dart';
@@ -30,6 +31,32 @@ class _SearchState extends State<Search> {
       child: SearchBar<AppInfoModel>(
         onSearch: search,
         minimumChars: 1,
+        emptyWidget: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'そのアプリはないみたいだよ(¯－¯٥)',
+                  style: GoogleFonts.mPLUS1p(),
+                ),
+              ],
+            ),
+          ),
+        ),
+        placeHolder: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  '検索でヒットしたアプリがここに表示されるよ♪',
+                  style: GoogleFonts.mPLUS1p(),
+                ),
+              ],
+            ),
+          ),
+        ),
         onItemFound: (AppInfoModel app, int index) {
           final appIcon = app.icon;
 
@@ -58,6 +85,7 @@ class _SearchState extends State<Search> {
 //            // リストサブタイトルにバージョンを表示
 //            subtitle: Text(app.versionName),
           );
+//          }
         },
       ),
     );
