@@ -3,6 +3,7 @@ import 'package:app_manager/google_map_view.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:like_button/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_manager/model/app_info_model.dart';
 
@@ -34,6 +35,15 @@ class _InformationState extends State<Information> {
         widget.appInfo.packageName + '-position-latitude', newValue.latitude);
     prefs.setDouble(
         widget.appInfo.packageName + '-position-longitude', newValue.longitude);
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    // like ボタン押したタイミングで SharedPreference に保存
+    final SharedPreferences prefs = await _prefs;
+    prefs.setBool(widget.appInfo.packageName + '-fav', !isLiked);
+    // アプリ情報モデルも更新
+    widget.appInfo.setFav(!isLiked);
+    return !isLiked;
   }
 
   @override
@@ -88,12 +98,34 @@ class _InformationState extends State<Information> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                widget.appInfo.name,
-                style: GoogleFonts.mPLUS1p(
-                  textStyle: _style,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    widget.appInfo.name,
+                    style: GoogleFonts.mPLUS1p(
+                      textStyle: _style,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  LikeButton(
+                      // 初期値はアプリ情報モデルのもの
+                      isLiked: widget.appInfo.fav,
+                      // タップ時のイベントは上で追加したメソッド
+                      onTap: onLikeButtonTapped,
+                      bubblesColor: const BubblesColor(
+                        dotPrimaryColor: Color(0xfffcea6b),
+                        dotSecondaryColor: Color(0xfffbe340),
+                      ),
+                      likeBuilder: (bool isLiked) {
+                        return Icon(
+                          Icons.star,
+                          color:
+                              isLiked ? Colors.amber : Colors.grey,
+//                          size: buttonSize,
+                        );
+                      }),
+                ],
               ),
               AppMemo(appInfo: widget.appInfo, editMode: _editMode),
               Center(

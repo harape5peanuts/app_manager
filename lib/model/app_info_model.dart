@@ -6,6 +6,8 @@ class AppInfoModel {
   Uint8List _icon;
   String _name;
   String _memo;
+  bool _fav;
+  LatLng _position;
 
   Uint8List get icon => _icon;
 
@@ -13,16 +15,17 @@ class AppInfoModel {
 
   String get memo => _memo;
 
+  bool get fav => _fav;
+
+  LatLng get position => _position;
+
   void setIcon(Uint8List icon) => _icon = icon;
 
   void setName(String name) => _name = name;
 
   void setMemo(String memo) => _memo = memo;
 
-  // フィールド、Getter、Setterの3点セット
-  LatLng _position;
-
-  LatLng get position => _position;
+  void setFav(bool fav) => _fav = fav;
 
   void setPosition(LatLng position) => _position = position;
 
@@ -39,9 +42,11 @@ class AppInfoModel {
     String packageName,
     String memo,
     LatLng position,
+    bool fav,
   })  : _icon = icon,
         _name = name,
         _packageName = packageName,
         _memo = memo,
-        _position = position;
+        _position = position,
+        _fav = fav;
 }

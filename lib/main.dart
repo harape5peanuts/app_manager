@@ -53,11 +53,15 @@ class _MainState extends State<Main> {
 // ない場合はアイコンなし
           : null;
       final position = await _getPosition(app);
-      models.add(AppInfoModel(
-          name: app.appName,
-          packageName: app.packageName,
-          icon: appIcon,
-          position: position));
+      final fav = await _getFav(app);
+      models.add(
+        AppInfoModel(
+            name: app.appName,
+            packageName: app.packageName,
+            icon: appIcon,
+            position: position,
+            fav: fav),
+      );
     }
     return models;
   }
@@ -91,7 +95,8 @@ class _MainState extends State<Main> {
       case 1:
         return Search(getAppsFunction: _getAppsFunction);
       case 2:
-        return Favorite();
+        return AppLists(
+            viewType: _viewType, getAppsFunction: _getFavAppsFunction);
     }
   }
 
@@ -162,6 +167,7 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     // 位置情報の取得はビルドのたびに⾏う（変更を検知できるように）
     _getAppsFunction = _getApps();
+    _getFavAppsFunction = _getFavApps();
 
     // チュートリアル用の Scaffold ウィジェット
     final overBoard = Scaffold(
@@ -270,4 +276,20 @@ class _MainState extends State<Main> {
         color: const Color(0xFFFBDAC8),
         doAnimateChild: true)
   ];
+
+  // Fav 付きアプリ情報の非同期リスト
+  Future<List<AppInfoModel>> _getFavAppsFunction;
+
+  // 初期表示時に SharedPreference から Fav 情報を取得するメソッド
+  Future<bool> _getFav(appInfo) async {
+    return _prefs.then((SharedPreferences prefs) {
+      return prefs.getBool(appInfo.packageName + '-fav') ?? false;
+    });
+  }
+
+  // Fav 付きアプリ情報の非同期リストを作成するメソッド
+  Future<List<AppInfoModel>> _getFavApps() async {
+    final allApps = await _getAppsFunction;
+    return allApps.where((element) => element.fav).toList();
+  }
 }
