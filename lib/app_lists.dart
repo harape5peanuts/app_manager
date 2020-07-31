@@ -4,109 +4,141 @@ import 'information.dart';
 import 'model/app_info_model.dart';
 
 class AppLists extends StatefulWidget {
-  AppLists({Key key, this.viewType, this.getAppsFunction}) : super(key: key);
+  AppLists(
+      {Key key, this.viewType, this.getAppsFunction, this.getAllAppsFunction})
+      : super(key: key);
 
   final String viewType;
   final Future<List<AppInfoModel>> getAppsFunction;
+  final Future<List<AppInfoModel>> getAllAppsFunction;
 
   @override
   _AppListsState createState() => _AppListsState();
 }
 
 class _AppListsState extends State<AppLists> {
-  Widget _toggleView(apps) {
-    if (widget.viewType == 'grid') {
-      return GridView.builder(
-        itemCount: apps.length,
-        primary: false,
-        padding: const EdgeInsets.all(40),
+  List<AppInfoModel> _apps;
+  List<AppInfoModel> _allApps;
+
+  Widget _toggleView() {
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverPadding(
+          padding: const EdgeInsets.all(40),
+          sliver: SliverToBoxAdapter(
+            child: Text('近くに登録されたアプリ'),
+          ),
+        ),
+        (widget.viewType == 'grid') ? _makeGrid(_apps) : _makeLists(_apps),
+        SliverPadding(
+          padding: const EdgeInsets.all(40),
+          sliver: SliverToBoxAdapter(
+            child: Text('すべてのアプリ'),
+          ),
+        ),
+        (widget.viewType == 'grid')
+            ? _makeGrid(_allApps)
+            : _makeLists(_allApps),
+      ],
+    );
+  }
+
+  Widget _makeGrid(List<AppInfoModel> apps) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(40),
+      sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisSpacing: 30,
           mainAxisSpacing: 30,
           crossAxisCount: 3,
         ),
-        itemBuilder: (context, index) {
-          final app = apps[index];
-          final appIcon = app.icon;
-          return Container(
-            child: appIcon != null
-                // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
-                ? GestureDetector(
-                    // タップした場合は、詳細画面に遷移する
-                    onTap: () {
-                      Navigator.push(
-                        this.context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Information(appInfo: app),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Image.memory(appIcon),
-                      ),
-                    ),
-                  )
-                // ない場合はアイコンなし
-                : null,
-          );
-        },
-      );
-    } else {
-      return ListView.builder(
-        itemBuilder: (context, position) {
-          final app = apps[position];
-          final appIcon = app.icon;
-
-          // アプリひとつずつ横並び（ Column ）で情報を表示する
-          return Column(
-            children: <Widget>[
-              ListTile(
-                // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
-                leading: appIcon != null
-                    // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
-                    ? CircleAvatar(
-                        backgroundImage: MemoryImage(appIcon),
-                        backgroundColor: Colors.white,
-                      )
-                    // ない場合はアイコンなし
-                    : null,
-
-                // タップした場合は、詳細画面に遷移する
-                onTap: () {
-                  Navigator.push(
-                      this.context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              Information(appInfo: app)));
-                },
-
-                // リストタイトルにアプリ名＋パッケージ名を表示
-                title: Text("${app.appName}"),
-
-                // リストサブタイトルにバージョンを表示
-                subtitle: Text('Version: ${app.versionName}'),
+        delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+            final app = apps[index];
+            final appIcon = app.icon;
+            return GestureDetector(
+              // タップした場合は、詳細画面に遷移する
+              onTap: () {
+                Navigator.push(
+                  this.context,
+                  MaterialPageRoute(
+                    builder: (context) => Information(appInfo: app),
+                  ),
+                );
+              },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Image.memory(appIcon),
+                ),
               ),
+            );
+          },
+          childCount: apps.length,
+        ),
+      ),
+    );
+  }
 
-              // アンダーライン
-              Divider(
-                height: 1.0,
+  Widget _makeLists(List<AppInfoModel> apps) {
+    List<Column> lists = [];
+    apps.forEach((app) {
+      final appIcon = app.icon;
+      lists.add(
+        Column(
+          children: <Widget>[
+            ListTile(
+              // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
+              leading: appIcon != null
+              // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
+                  ? CircleAvatar(
+                backgroundImage: MemoryImage(appIcon),
+                backgroundColor: Colors.white,
               )
-            ],
-          );
-        },
-        itemCount: apps.length,
+              // ない場合はアイコンなし
+                  : null,
+
+              // タップした場合は、詳細画面に遷移する
+              onTap: () {
+                Navigator.push(
+                    this.context,
+                    MaterialPageRoute(
+                        builder: (context) => Information(appInfo: app)));
+              },
+
+              // リストタイトルにアプリ名＋パッケージ名を表示
+              title: Text("${app.name}"),
+
+              // リストサブタイトルにバージョンを表示
+//                subtitle: Text('Version: ${app.versionName}'),
+            ),
+
+            // アンダーライン
+            Divider(
+              height: 1.0,
+            )
+          ],
+        ),
       );
-    }
+    });
+
+    return SliverList(
+        delegate: new SliverChildListDelegate(
+          lists,
+        ));
+  }
+
+  Future<List<AppInfoModel>> _getApps() async {
+    _apps = await widget.getAppsFunction;
+    _allApps = await widget.getAllAppsFunction;
+    return _apps;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
-      future: widget.getAppsFunction,
+      future: _getApps(),
       builder: (context, data) {
         // 非同期処理中の判断
         if (data.data == null) {
@@ -116,9 +148,9 @@ class _AppListsState extends State<AppLists> {
           );
         } else {
           // データ取得後はリストビューに情報をセット
-          final apps = data.data as List<AppInfoModel>;
+//          final apps = data.data as List<AppInfoModel>;
 
-          return _toggleView(apps);
+          return _toggleView();
         }
       },
     );

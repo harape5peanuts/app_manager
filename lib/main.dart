@@ -91,11 +91,14 @@ class _MainState extends State<Main> {
     switch (pageNum) {
       case 0:
         return AppLists(
-            viewType: _viewType, getAppsFunction: _getNearLocationApps());
+          viewType: _viewType,
+          getAppsFunction: _getNearLocationApps(),
+          getAllAppsFunction: _getAppsFunction,
+        );
       case 1:
         return Search(getAppsFunction: _getAppsFunction);
       case 2:
-        return AppLists(
+        return Favorite(
             viewType: _viewType, getAppsFunction: _getFavAppsFunction);
     }
   }
