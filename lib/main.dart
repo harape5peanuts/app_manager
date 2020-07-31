@@ -23,7 +23,7 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   // チュートリアル表示後かどうかの State を用意
-  bool _afterOverBoad = false;
+  bool _afterOverBoard = false;
   GlobalKey mainKey = GlobalKey();
 
   AppInfoModel appInfo;
@@ -146,6 +146,18 @@ class _MainState extends State<Main> {
     return d;
   }
 
+  Future<bool> _isAfterOverBoard() async {
+    SharedPreferences prefs = await _prefs;
+    _afterOverBoard = prefs.getBool('after-over-board') ?? false;
+    return _afterOverBoard;
+  }
+
+  Future<void> _finishOverBoard() async {
+    await _prefs.then((SharedPreferences prefs) {
+      prefs.setBool('after-over-board', true);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // 位置情報の取得はビルドのたびに⾏う（変更を検知できるように）
@@ -159,57 +171,75 @@ class _MainState extends State<Main> {
         showBullets: true,
         skipCallback: () {
           setState(() {
-            _afterOverBoad = true;
+            _afterOverBoard = true;
+            _finishOverBoard();
           });
         },
         finishCallback: () {
           setState(() {
-            _afterOverBoad = true;
+            _afterOverBoard = true;
+            _finishOverBoard();
           });
         },
       ),
     );
 
-    return _afterOverBoad
-        ? Scaffold(
-            appBar: AppBar(
-                title: Text(
-                  widget.title,
-                  style: GoogleFonts.mPLUS1p(
-                    textStyle: TextStyle(
-                      decoration: TextDecoration.none,
-                    ),
-                    fontWeight: FontWeight.bold,
+    return FutureBuilder(
+      future: _isAfterOverBoard(),
+      builder: (context, data) {
+        // 非同期処理中の判断
+        if (data.data == null) {
+          // データ取得前はローディング中のプログレスを表示
+          return Center(
+            child: const CircularProgressIndicator(),
+          );
+        } else {
+          // データ取得後はリストビューに情報をセット
+          final afterOverBoard = data.data as bool;
+
+          return afterOverBoard
+              ? Scaffold(
+                  appBar: AppBar(
+                      title: Text(
+                        widget.title,
+                        style: GoogleFonts.mPLUS1p(
+                          textStyle: TextStyle(
+                            decoration: TextDecoration.none,
+                          ),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      actions: currentPage == 0
+                          ? <Widget>[
+                              // AppBar にボタンを用意して表示内容を切り替える処理が書かれている
+                              IconButton(
+                                icon: Icon(_viewType == 'grid'
+                                    ? Icons.view_list
+                                    : Icons.apps),
+                                onPressed: () => _toggleViewType(),
+                              )
+                            ]
+                          : <Widget>[]),
+                  body: _getPage(currentPage),
+                  bottomNavigationBar: FancyBottomNavigation(
+                    tabs: [
+                      TabData(iconData: Icons.home, title: "Home"),
+                      TabData(iconData: Icons.search, title: "Search"),
+                      TabData(iconData: Icons.star, title: "favorite")
+                    ],
+                    initialSelection: 0,
+                    key: bottomNavigationKey,
+                    onTabChangedListener: (position) {
+                      setState(() {
+                        currentPage = position;
+                      });
+                    },
                   ),
-                ),
-                actions: currentPage == 0
-                    ? <Widget>[
-                        // AppBar にボタンを用意して表示内容を切り替える処理が書かれている
-                        IconButton(
-                          icon: Icon(_viewType == 'grid'
-                              ? Icons.view_list
-                              : Icons.apps),
-                          onPressed: () => _toggleViewType(),
-                        )
-                      ]
-                    : <Widget>[]),
-            body: _getPage(currentPage),
-            bottomNavigationBar: FancyBottomNavigation(
-              tabs: [
-                TabData(iconData: Icons.home, title: "Home"),
-                TabData(iconData: Icons.search, title: "Search"),
-                TabData(iconData: Icons.star, title: "favorite")
-              ],
-              initialSelection: 0,
-              key: bottomNavigationKey,
-              onTabChangedListener: (position) {
-                setState(() {
-                  currentPage = position;
-                });
-              },
-            ),
-          )
-        : overBoard;
+                )
+              : overBoard;
+        }
+      },
+    );
   }
 
   final pages = [
@@ -234,7 +264,8 @@ class _MainState extends State<Main> {
     PageModel.withChild(
         child: Padding(
           padding: EdgeInsets.only(bottom: 25.0),
-          child: Image.asset('assets/tutorial/tutorial4.png', width: 400.0, height: 400.0),
+          child: Image.asset('assets/tutorial/tutorial4.png',
+              width: 400.0, height: 400.0),
         ),
         color: const Color(0xFFFBDAC8),
         doAnimateChild: true)
