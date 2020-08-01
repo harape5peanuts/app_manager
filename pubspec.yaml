@@ -91,7 +91,9 @@ flutter_icons:
   image_path: "assets/icon/icon.png"
   adaptive_icon_background: "assets/icon/background.png"
   adaptive_icon_foreground: "assets/icon/foreground.png"
+#  adaptive_icon_foreground: "assets/icon/foreground.png"
 
 flutter_native_splash:
   image: assets/images/splash.png
   color: "#ffffff"
+  fill: true

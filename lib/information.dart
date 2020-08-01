@@ -76,13 +76,14 @@ class _InformationState extends State<Information> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         title: Text(
           'App Info',
           style: GoogleFonts.mPLUS1p(
             textStyle: TextStyle(
-              decoration: TextDecoration.none,
-              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
+            fontWeight: FontWeight.bold,
           ),
         ),
         actions: <Widget>[
@@ -174,7 +175,7 @@ class _InformationState extends State<Information> {
       ),
       floatingActionButton: _editMode
           ? FloatingActionButton(
-              child: Icon(Icons.place),
+              child: Icon(Icons.place, color: Colors.white,),
               onPressed: () {
                 Navigator.push(
                   this.context,

@@ -218,11 +218,12 @@ class _MainState extends State<Main> {
           return afterOverBoard
               ? Scaffold(
                   appBar: AppBar(
+                      iconTheme: IconThemeData(color: Colors.white),
                       title: Text(
                         widget.title,
                         style: GoogleFonts.mPLUS1p(
                           textStyle: TextStyle(
-                            decoration: TextDecoration.none,
+                            color: Colors.white,
                           ),
                           fontWeight: FontWeight.bold,
                         ),

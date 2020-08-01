@@ -28,8 +28,7 @@ class _GoogleMapState extends State<GoogleMapView> {
   // アプリの位置情報
   LatLng _position;
 
-  final places =
-      GoogleMapsPlaces(apiKey: "xxxxxxxxxxxxxxxxxx");
+  final places = GoogleMapsPlaces(apiKey: "xxxxxxxxxxxxxxxxxx");
 
   @override
   void initState() {
@@ -80,13 +79,14 @@ class _GoogleMapState extends State<GoogleMapView> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         title: Text(
           'Google Map',
           style: GoogleFonts.mPLUS1p(
             textStyle: TextStyle(
-              decoration: TextDecoration.none,
-              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -95,7 +95,10 @@ class _GoogleMapState extends State<GoogleMapView> {
       // タップしたアプリの位置情報を呼び出し元に返すためのボタン
       floatingActionButton: FloatingActionButton(
         onPressed: () => _selectPosition(),
-        child: Icon(Icons.check),
+        child: Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
       ),
     );
   }

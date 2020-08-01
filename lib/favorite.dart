@@ -31,7 +31,7 @@ class _FavoriteState extends State<Favorite> {
             SizedBox(height: 20),
             Text(
               'アプリ情報の★をタップしてお気に入りのアプリを登録しよう！',
-              style: GoogleFonts.mPLUS1p(),
+              style: GoogleFonts.mPLUS1p(textStyle: TextStyle(height: 1.3)),
             ),
           ],
         ),
