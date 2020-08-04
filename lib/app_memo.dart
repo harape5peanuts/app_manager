@@ -31,12 +31,13 @@ class _AppMemoState extends State<AppMemo> {
   void initState() {
     super.initState();
     _memo = widget.appInfo.memo;
+    _controller = TextEditingController(text: widget.appInfo.memo ?? '');
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 50.0),
+      padding: EdgeInsets.fromLTRB(5.0, 30.0, 5.0, 30.0),
       child: widget.editMode
           ? TextField(
               controller: _controller,
@@ -48,8 +49,11 @@ class _AppMemoState extends State<AppMemo> {
                   ? 'このアプリのメモは登録されてないみたいだよ (¯―¯٥)'
                   : _memo,
               style: GoogleFonts.mPLUS1p(
-                textStyle: TextStyle(color: Color.fromRGBO(0, 0, 0, 0.6)),
-                fontSize: 20.0,
+                textStyle: TextStyle(
+                  color: Color.fromRGBO(0, 0, 0, 0.6),
+                  height: 1.3,
+                ),
+                fontSize: 18.0,
               ),
             ),
     );

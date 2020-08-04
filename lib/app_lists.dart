@@ -63,6 +63,9 @@ class _AppListsState extends State<AppLists> {
         (widget.viewType == 'grid')
             ? _makeGrid(_allApps)
             : _makeLists(_allApps),
+        SliverPadding(
+          padding: const EdgeInsets.all(30),
+        )
       ],
     );
   }
@@ -131,10 +134,15 @@ class _AppListsState extends State<AppLists> {
               },
 
               // リストタイトルにアプリ名＋パッケージ名を表示
-              title: Text("${app.name}"),
+              title: Text(
+                "${app.name}",
+                style: GoogleFonts.mPLUS1p(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
 
               // リストサブタイトルにバージョンを表示
-                subtitle: Text('${app.memo}'),
+              subtitle: Text('${app.memo}'),
             ),
 
             // アンダーライン
