@@ -63,12 +63,10 @@ class _SearchState extends State<Search> {
           return ListTile(
             // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
             leading: appIcon != null
-                // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
                 ? CircleAvatar(
                     backgroundImage: MemoryImage(appIcon),
                     backgroundColor: Colors.white,
                   )
-                // ない場合はアイコンなし
                 : null,
 
             // タップした場合は、詳細画面に遷移する
@@ -82,10 +80,9 @@ class _SearchState extends State<Search> {
             // リストタイトルにアプリ名＋パッケージ名を表示
             title: Text(app.name),
 
-//            // リストサブタイトルにバージョンを表示
-//            subtitle: Text(app.versionName),
+            // リストサブタイトルにバージョンを表示
+            subtitle: Text('${app.memo}'),
           );
-//          }
         },
       ),
     );

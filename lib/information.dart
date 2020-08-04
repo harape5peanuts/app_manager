@@ -19,7 +19,6 @@ class Information extends StatefulWidget {
 
 class _InformationState extends State<Information> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<LatLng> _appPosition;
 
   LatLng _position;
   bool _editMode = false;
@@ -50,16 +49,6 @@ class _InformationState extends State<Information> {
   @override
   void initState() {
     super.initState();
-//    _appPosition = _prefs.then((SharedPreferences prefs) {
-//      var latitude =
-//          (prefs.getDouble(widget.appInfo.packageName + '-position-latitude') ??
-//              0);
-//      var longitude = (prefs
-//              .getDouble(widget.appInfo.packageName + '-position-longitude') ??
-//          0);
-//      var position = LatLng(latitude, longitude);
-//      return position;
-//    });
   }
 
   @override
@@ -126,7 +115,6 @@ class _InformationState extends State<Information> {
                         return Icon(
                           Icons.star,
                           color: isLiked ? Colors.amber : Colors.grey,
-//                          size: buttonSize,
                         );
                       },
                     ),

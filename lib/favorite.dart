@@ -55,7 +55,6 @@ class _FavoriteState extends State<Favorite> {
           final appIcon = app.icon;
           return Container(
             child: appIcon != null
-                // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
                 ? GestureDetector(
                     // タップした場合は、詳細画面に遷移する
                     onTap: () {
@@ -73,7 +72,6 @@ class _FavoriteState extends State<Favorite> {
                       ),
                     ),
                   )
-                // ない場合はアイコンなし
                 : null,
           );
         },
@@ -88,22 +86,21 @@ class _FavoriteState extends State<Favorite> {
           return Column(
             children: <Widget>[
               ListTile(
-                // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
                 leading: appIcon != null
-                    // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
                     ? CircleAvatar(
                         backgroundImage: MemoryImage(appIcon),
                         backgroundColor: Colors.white,
                       )
-                    // ない場合はアイコンなし
                     : null,
 
                 // タップした場合は、詳細画面に遷移する
                 onTap: () {
                   Navigator.push(
-                      this.context,
-                      MaterialPageRoute(
-                          builder: (context) => Information(appInfo: app)));
+                    this.context,
+                    MaterialPageRoute(
+                      builder: (context) => Information(appInfo: app),
+                    ),
+                  );
                 },
 
                 // リストタイトルにアプリ名＋パッケージ名を表示
@@ -128,7 +125,6 @@ class _FavoriteState extends State<Favorite> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
       future: widget.getAppsFunction,
       builder: (context, data) {
         // 非同期処理中の判断

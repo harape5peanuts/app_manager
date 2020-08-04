@@ -115,14 +115,11 @@ class _AppListsState extends State<AppLists> {
         Column(
           children: <Widget>[
             ListTile(
-              // `x is AnyClass` という記述は Java でいう `x instanceOf AnyClass`
               leading: appIcon != null
-                  // アイコンを持っているアプリ（ AppInfoModelWithIcon インスタンス）の場合はアイコンを表示する
                   ? CircleAvatar(
                       backgroundImage: MemoryImage(appIcon),
                       backgroundColor: Colors.white,
                     )
-                  // ない場合はアイコンなし
                   : null,
 
               // タップした場合は、詳細画面に遷移する
@@ -169,7 +166,6 @@ class _AppListsState extends State<AppLists> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // `device_apps` パッケージを利用して端末にインストールされているアプリの一覧を取得している
       future: _getApps(),
       builder: (context, data) {
         // 非同期処理中の判断
@@ -179,9 +175,6 @@ class _AppListsState extends State<AppLists> {
             child: const CircularProgressIndicator(),
           );
         } else {
-          // データ取得後はリストビューに情報をセット
-//          final apps = data.data as List<AppInfoModel>;
-
           return _toggleView();
         }
       },

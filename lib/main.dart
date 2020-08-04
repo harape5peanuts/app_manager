@@ -33,12 +33,9 @@ class _MainState extends State<Main> {
   // 現在位置
   l.LocationData _yourLocation;
 
-  LatLng _position;
-
   GlobalKey bottomNavigationKey = GlobalKey();
   String _viewType = 'grid';
 
-//  Future<List<Application>> _getAppsFunction;
   Future<List<Application>> _getApplicationFunction;
   Future<List<AppInfoModel>> _getAppsFunction;
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -47,11 +44,7 @@ class _MainState extends State<Main> {
     List<Application> apps = await _getApplicationFunction;
     List<AppInfoModel> models = [];
     for (var app in apps) {
-      final appIcon = app is ApplicationWithIcon
-// アイコンを持っているアプリ（ ApplicationWithIcon インスタンス）の場合はアイコンを表⽰する
-          ? app.icon
-// ない場合はアイコンなし
-          : null;
+      final appIcon = app is ApplicationWithIcon ? app.icon : null;
       final position = await _getPosition(app);
       final memo = await _getMemo(app);
       final fav = await _getFav(app);
@@ -128,8 +121,6 @@ class _MainState extends State<Main> {
     // 現在位置の取得
     _getLocation();
 
-//    _position = appInfo.position;
-
     // フィールド名の変更
     _getApplicationFunction = DeviceApps.getInstalledApplications(
       includeAppIcons: true,
@@ -143,7 +134,6 @@ class _MainState extends State<Main> {
   }
 
   double haversineDistance(LatLng mk1, LatLng mk2) {
-    // Radius of the Earth in Kilometers
     var R = 6371.0710;
     // 角度（ radians ）に変換
     var latitudeRadians1 = mk1.latitude * (pi / 180);

@@ -57,13 +57,6 @@ class _GoogleMapState extends State<GoogleMapView> {
   Future<List<PlacesSearchResult>> search() async {
     PlacesSearchResponse response = await places.searchNearbyWithRadius(
         Location(_position.latitude, _position.longitude), 10);
-    // TODO: 確認用の出力
-    response.results.forEach((element) {
-      print('名前: ' + element.name);
-      print('緯度: ' + (element.geometry.location.lat).toString());
-      print('経度: ' + (element.geometry.location.lng).toString());
-      print('types: ' + element.types.join(","));
-    });
     return response.results
         // 地名などをフィルタリング
         .where((element) => !element.types.contains('political'))
@@ -184,12 +177,6 @@ class _GoogleMapState extends State<GoogleMapView> {
     }
   }
 
-//  void search() async {
-//    PlacesSearchResponse response = await places.searchNearbyWithRadius(
-//        Location(_position.latitude, _position.longitude), 10);
-//    print(response);
-//  }
-
   /// マーカーの位置情報を引数に、呼び出し元画面へ遷移する
   void _selectPosition() {
     showDialog(
@@ -207,8 +194,6 @@ class _GoogleMapState extends State<GoogleMapView> {
               child: Text("OK"),
               onPressed: () {
                 Navigator.pop(context);
-
-                // ここでアプリの位置情報を渡している
                 Navigator.of(context).pop(_position);
               },
             ),
